@@ -5,6 +5,7 @@ from fastapi.responses import HTMLResponse
 import uvicorn
 import os
 from pathlib import Path
+from datetime import datetime
 
 app = FastAPI()
 
@@ -25,6 +26,7 @@ else:
 TAX_RATE_WITHOUT_VAT = 0.05
 TAX_RATE_WITH_VAT = 0.03
 VAT_RATE = 0.20
+MILITARY_TAX_RATE = 0.01  # Військовий збір - 1%
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
@@ -38,8 +40,13 @@ async def calculate(
     income: float = Form(...), 
     is_vat_payer: bool = Form(False),
     esv_amount: float = Form(1430.0),  # Мінімальний ЄСВ за замовчуванням
-    months: int = Form(1)  # Кількість місяців
+    months: int = Form(1),  # Кількість місяців
+    calculation_date: str = Form(None)  # Дата розрахунку
 ):
+    # Якщо дата не вказана, використовуємо поточну
+    if not calculation_date:
+        calculation_date = datetime.now().strftime("%Y-%m-%d")
+
     if is_vat_payer:
         # Для платників ПДВ
         vat_amount = income * VAT_RATE / (1 + VAT_RATE)
@@ -52,9 +59,14 @@ async def calculate(
         vat_amount = 0
         total_tax = tax_amount
     
+    # Військовий збір (1% від доходу)
+    military_tax = income * MILITARY_TAX_RATE
+    
     # Додаємо ЄСВ (помножено на кількість місяців)
     total_esv = esv_amount * months
-    total_tax_with_esv = total_tax + total_esv
+    
+    # Загальна сума податків (єдиний податок + ПДВ + військовий збір + ЄСВ)
+    total_tax_with_esv = total_tax + military_tax + total_esv
     
     # Чистий дохід
     net_income = income - total_tax_with_esv
@@ -71,6 +83,9 @@ async def calculate(
                 "is_vat_payer": is_vat_payer,
                 "tax_amount": tax_amount,
                 "vat_amount": vat_amount,
+                "military_tax": military_tax,
+                "military_tax_percentage": "1%",
+                "calculation_date": calculation_date,
                 "esv_amount": esv_amount,
                 "months": months,
                 "total_esv": total_esv,

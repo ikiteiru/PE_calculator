@@ -79,6 +79,12 @@
                                 <div class="form-text">Виберіть за скільки місяців враховувати ЄСВ у розрахунку</div>
                             </div>
                             
+                            <div class="mb-3">
+                                <label for="calculation_date" class="form-label">Дата розрахунку:</label>
+                                <input type="date" class="form-control" id="calculation_date" name="calculation_date">
+                                <div class="form-text">Військовий збір: завжди 1% від доходу</div>
+                            </div>
+                            
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">Розрахувати</button>
                             </div>
@@ -99,6 +105,7 @@
                                 <p>Статус ПДВ: <strong>{% if result.is_vat_payer %}Платник ПДВ (3% + ПДВ){% else %}Неплатник ПДВ (5%){% endif %}</strong></p>
                                 <p>ЄСВ: <strong>{{ result.esv_amount|round(2) }} грн/міс</strong></p>
                                 <p>Період: <strong>{{ result.months }} міс</strong></p>
+                                <p>Дата розрахунку: <strong>{{ result.calculation_date }}</strong></p>
                             </div>
                             <div class="col-md-6">
                                 <h4>Податки:</h4>
@@ -106,6 +113,7 @@
                                 {% if result.is_vat_payer %}
                                 <p class="tax-amount">ПДВ (20%): <strong>{{ result.vat_amount|round(2) }} грн</strong></p>
                                 {% endif %}
+                                <p class="tax-amount">Військовий збір ({{ result.military_tax_percentage }}): <strong>{{ result.military_tax|round(2) }} грн</strong></p>
                                 <p class="tax-amount">ЄСВ ({{ result.months }} міс): <strong>{{ result.total_esv|round(2) }} грн</strong></p>
                                 <p class="tax-amount">Всього податків: <strong>{{ result.total_tax_with_esv|round(2) }} грн</strong></p>
                             </div>
@@ -132,5 +140,13 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Set default date to today
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('calculation_date').value = formattedDate;
+        });
+    </script>
 </body>
 </html> 
