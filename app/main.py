@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse
 import uvicorn
 import os
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = FastAPI()
 
@@ -34,18 +34,39 @@ async def home(request: Request):
         "index.html", {"request": request, "result": None}
     )
 
+def calculate_months_between_dates(start_date_str, end_date_str):
+    """Розраховує кількість місяців між двома датами"""
+    start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+    end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+    
+    # Додаємо 1 день до end_date, щоб включити останній день у розрахунок
+    end_date = end_date + timedelta(days=1)
+    
+    # Розраховуємо різницю в днях
+    days_diff = (end_date - start_date).days
+    
+    # Розраховуємо кількість місяців (приблизно)
+    months = days_diff / 30.44  # Середня кількість днів у місяці
+    
+    # Округляємо до 2 десяткових знаків
+    return round(months, 2)
+
 @app.post("/calculate", response_class=HTMLResponse)
 async def calculate(
     request: Request, 
     income: float = Form(...), 
     is_vat_payer: bool = Form(False),
     esv_amount: float = Form(1430.0),  # Мінімальний ЄСВ за замовчуванням
-    months: int = Form(1),  # Кількість місяців
+    esv_start_date: str = Form(...),   # Початкова дата для розрахунку ЄСВ
+    esv_end_date: str = Form(...),     # Кінцева дата для розрахунку ЄСВ
     calculation_date: str = Form(None)  # Дата розрахунку
 ):
     # Якщо дата не вказана, використовуємо поточну
     if not calculation_date:
         calculation_date = datetime.now().strftime("%Y-%m-%d")
+    
+    # Розраховуємо кількість місяців між датами
+    months = calculate_months_between_dates(esv_start_date, esv_end_date)
 
     if is_vat_payer:
         # Для платників ПДВ
@@ -85,6 +106,8 @@ async def calculate(
                 "vat_amount": vat_amount,
                 "military_tax": military_tax,
                 "military_tax_percentage": "1%",
+                "esv_start_date": esv_start_date,
+                "esv_end_date": esv_end_date,
                 "calculation_date": calculation_date,
                 "esv_amount": esv_amount,
                 "months": months,

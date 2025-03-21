@@ -70,13 +70,18 @@
                             </div>
                             
                             <div class="mb-3">
-                                <label for="months" class="form-label">Кількість місяців для розрахунку ЄСВ:</label>
-                                <select class="form-select" id="months" name="months">
-                                    {% for i in range(1, 13) %}
-                                    <option value="{{ i }}">{{ i }} місяців</option>
-                                    {% endfor %}
-                                </select>
-                                <div class="form-text">Виберіть за скільки місяців враховувати ЄСВ у розрахунку</div>
+                                <label class="form-label">Період для розрахунку ЄСВ:</label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="esv_start_date" class="form-label">Від:</label>
+                                        <input type="date" class="form-control" id="esv_start_date" name="esv_start_date">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="esv_end_date" class="form-label">До:</label>
+                                        <input type="date" class="form-control" id="esv_end_date" name="esv_end_date">
+                                    </div>
+                                </div>
+                                <div class="form-text">Виберіть період для розрахунку ЄСВ</div>
                             </div>
                             
                             <div class="mb-3">
@@ -104,7 +109,7 @@
                                 <p>Дохід: <strong>{{ result.income|round(2) }} грн</strong></p>
                                 <p>Статус ПДВ: <strong>{% if result.is_vat_payer %}Платник ПДВ (3% + ПДВ){% else %}Неплатник ПДВ (5%){% endif %}</strong></p>
                                 <p>ЄСВ: <strong>{{ result.esv_amount|round(2) }} грн/міс</strong></p>
-                                <p>Період: <strong>{{ result.months }} міс</strong></p>
+                                <p>Період ЄСВ: <strong>{{ result.esv_start_date }} - {{ result.esv_end_date }}</strong> ({{ result.months }} міс)</p>
                                 <p>Дата розрахунку: <strong>{{ result.calculation_date }}</strong></p>
                             </div>
                             <div class="col-md-6">
@@ -114,7 +119,7 @@
                                 <p class="tax-amount">ПДВ (20%): <strong>{{ result.vat_amount|round(2) }} грн</strong></p>
                                 {% endif %}
                                 <p class="tax-amount">Військовий збір ({{ result.military_tax_percentage }}): <strong>{{ result.military_tax|round(2) }} грн</strong></p>
-                                <p class="tax-amount">ЄСВ ({{ result.months }} міс): <strong>{{ result.total_esv|round(2) }} грн</strong></p>
+                                <p class="tax-amount">ЄСВ за період: <strong>{{ result.total_esv|round(2) }} грн</strong></p>
                                 <p class="tax-amount">Всього податків: <strong>{{ result.total_tax_with_esv|round(2) }} грн</strong></p>
                             </div>
                         </div>
@@ -141,11 +146,19 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Set default date to today
+        // Set default dates
         document.addEventListener('DOMContentLoaded', function() {
+            // Set current date for calculation date
             const today = new Date();
-            const formattedDate = today.toISOString().split('T')[0];
-            document.getElementById('calculation_date').value = formattedDate;
+            const formattedToday = today.toISOString().split('T')[0];
+            document.getElementById('calculation_date').value = formattedToday;
+            
+            // Set default ESV period (current month)
+            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            document.getElementById('esv_start_date').value = firstDayOfMonth.toISOString().split('T')[0];
+            document.getElementById('esv_end_date').value = lastDayOfMonth.toISOString().split('T')[0];
         });
     </script>
 </body>
