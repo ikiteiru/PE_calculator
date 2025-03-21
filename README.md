@@ -38,21 +38,28 @@ python -m app.main
 
 ## Деплой на Vercel
 
-1. Створіть обліковий запис на [Vercel](https://vercel.com/)
-2. Встановіть Vercel CLI:
+1. Зареєструйтесь на [Vercel](https://vercel.com/) та встановіть Vercel CLI:
 ```bash
 npm i -g vercel
 ```
 
-3. Авторизуйтесь:
+2. Авторизуйтесь у Vercel CLI:
 ```bash
 vercel login
 ```
 
-4. Зробіть деплой:
+3. Розгорніть проект на Vercel:
 ```bash
 vercel
 ```
+
+Або зробіть деплой через GitHub:
+1. Завантажте код на GitHub
+2. Підключіть свій GitHub акаунт до Vercel
+3. Імпортуйте репозиторій
+4. Vercel автоматично налаштує проект і розгорне його
+
+Примітка: Проект налаштований для роботи на Vercel завдяки файлам `vercel.json` та `api/index.py`.
 
 ## Податкові ставки (2023 рік)
 

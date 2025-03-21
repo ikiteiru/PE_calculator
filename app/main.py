@@ -4,16 +4,21 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 import uvicorn
 import os
+from pathlib import Path
 
 app = FastAPI()
 
-# Визначення шляхів до директорій
-static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
-templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Підключаємо статичні файли і шаблони
-app.mount("/static", StaticFiles(directory=static_dir), name="static")
-templates = Jinja2Templates(directory=templates_dir)
+static_dir = str(BASE_DIR / "static")
+templates_dir = str(BASE_DIR / "templates")
+
+if os.environ.get("VERCEL"):
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+    templates = Jinja2Templates(directory="templates")
+else:
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+    templates = Jinja2Templates(directory=templates_dir)
 
 # Податкові ставки для ФОП 3-ої групи
 # Для неплатників ПДВ - 5%, для платників ПДВ - 3% + 20% ПДВ
