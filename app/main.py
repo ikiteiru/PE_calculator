@@ -58,13 +58,8 @@ async def calculate(
     is_vat_payer: bool = Form(False),
     esv_amount: float = Form(1430.0),  # Мінімальний ЄСВ за замовчуванням
     esv_start_date: str = Form(...),   # Початкова дата для розрахунку ЄСВ
-    esv_end_date: str = Form(...),     # Кінцева дата для розрахунку ЄСВ
-    calculation_date: str = Form(None)  # Дата розрахунку
+    esv_end_date: str = Form(...)      # Кінцева дата для розрахунку ЄСВ
 ):
-    # Якщо дата не вказана, використовуємо поточну
-    if not calculation_date:
-        calculation_date = datetime.now().strftime("%Y-%m-%d")
-    
     # Розраховуємо кількість місяців між датами
     months = calculate_months_between_dates(esv_start_date, esv_end_date)
 
@@ -108,7 +103,6 @@ async def calculate(
                 "military_tax_percentage": "1%",
                 "esv_start_date": esv_start_date,
                 "esv_end_date": esv_end_date,
-                "calculation_date": calculation_date,
                 "esv_amount": esv_amount,
                 "months": months,
                 "total_esv": total_esv,

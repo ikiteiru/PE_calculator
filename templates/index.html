@@ -84,12 +84,6 @@
                                 <div class="form-text">Виберіть період для розрахунку ЄСВ</div>
                             </div>
                             
-                            <div class="mb-3">
-                                <label for="calculation_date" class="form-label">Дата розрахунку:</label>
-                                <input type="date" class="form-control" id="calculation_date" name="calculation_date">
-                                <div class="form-text">Військовий збір: завжди 1% від доходу</div>
-                            </div>
-                            
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">Розрахувати</button>
                             </div>
@@ -110,7 +104,6 @@
                                 <p>Статус ПДВ: <strong>{% if result.is_vat_payer %}Платник ПДВ (3% + ПДВ){% else %}Неплатник ПДВ (5%){% endif %}</strong></p>
                                 <p>ЄСВ: <strong>{{ result.esv_amount|round(2) }} грн/міс</strong></p>
                                 <p>Період ЄСВ: <strong>{{ result.esv_start_date }} - {{ result.esv_end_date }}</strong> ({{ result.months }} міс)</p>
-                                <p>Дата розрахунку: <strong>{{ result.calculation_date }}</strong></p>
                             </div>
                             <div class="col-md-6">
                                 <h4>Податки:</h4>
@@ -148,12 +141,8 @@
     <script>
         // Set default dates
         document.addEventListener('DOMContentLoaded', function() {
-            // Set current date for calculation date
-            const today = new Date();
-            const formattedToday = today.toISOString().split('T')[0];
-            document.getElementById('calculation_date').value = formattedToday;
-            
             // Set default ESV period (current month)
+            const today = new Date();
             const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
             const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
             
