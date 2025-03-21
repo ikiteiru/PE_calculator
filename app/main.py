@@ -14,8 +14,8 @@ static_dir = str(BASE_DIR / "static")
 templates_dir = str(BASE_DIR / "templates")
 
 if os.environ.get("VERCEL"):
-    app.mount("/static", StaticFiles(directory="static"), name="static")
-    templates = Jinja2Templates(directory="templates")
+    app.mount("/static", StaticFiles(directory="/var/task/static"), name="static")
+    templates = Jinja2Templates(directory="/var/task/templates")
 else:
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
     templates = Jinja2Templates(directory=templates_dir)
